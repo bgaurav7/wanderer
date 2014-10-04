@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <CheckBoxPreference
+       android:key="nSearch"
+       android:title="Nearby Search"
+       android:summary="Search nearby places"
+       android:defaultValue="true" />
+    <ListPreference 
+        android:title="Place"
+        android:key="place"
+        android:defaultValue="food"
+        android:summary="Search Nearby For"
+        android:entries="@array/place_type_name"
+        android:entryValues="@array/place_type" />
+</PreferenceScreen>
