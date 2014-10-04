@@ -15,6 +15,7 @@ import com.gb.pro.db.LocationDataSource;
 import com.gb.pro.nLocation.Loc_Tag;
 import com.gb.pro.nLocation.POI;
 import com.gb.wanderer.PlaceJSONParser;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -184,6 +185,7 @@ public class NearBy {
 
 		// Adding marker on the Google Map
 		gMap.addMarker(markerOptions);
+		gMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 	}
 
 	/** A class to parse the Google Places in JSON format */

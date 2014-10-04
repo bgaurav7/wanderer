@@ -71,6 +71,28 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/nloc" />
+        
+        <Button
+            android:id="@+id/export_Loc"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Export Location Data" />
+        
+         <Button
+            android:id="@+id/export_POI"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:paddingTop="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Export POI Data" />
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

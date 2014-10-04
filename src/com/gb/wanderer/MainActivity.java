@@ -170,6 +170,37 @@ public class MainActivity extends FragmentActivity implements LocationListener {
 
 			initializeDB();
 			
+			Button exp_Loc = (Button) findViewById(R.id.export_Loc);
+			Button exp_POI = (Button) findViewById(R.id.export_POI);
+			
+			exp_Loc.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					try {
+						lds.exoprtAllLoc_Tag();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mDrawerLayout.closeDrawers();
+				}
+			});
+			
+			exp_POI.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					try {
+						lds.exportAllPOI();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mDrawerLayout.closeDrawers();
+				}
+			});
+			
 	        new LoadData().execute();
 			
 		}
@@ -275,17 +306,30 @@ public class MainActivity extends FragmentActivity implements LocationListener {
             Loc_Tag p = loc_d.get(k);
             Set<Integer> tmp = new HashSet<Integer>();
             
+            HashMap<Integer , Integer> ds_t = new HashMap<Integer, Integer>();
+    	    
             for(int i = 0; i < loc_d.size(); i++) {
                 Loc_Tag pt = loc_d.get(i);
                 if(pt.isSame(p, 20)) {
                     String key = pt.lat + "," + pt.lng;
                     tmp.add(i);
                     if(h.containsKey(key)) {
-                        ds.put(k, h.get(key));
+                    	int it = h.get(key);
+                    	if(ds_t.containsKey(it)) {
+                    		ds_t.put(it, ds_t.get(it) + 1);
+                    	} else {
+                    		ds_t.put(it, 1);
+                    	}
                      } else {
                         h.put(key, k);
                     }
                 }
+            }
+            
+            for(int it : ds_t.keySet()) {
+            	if(ds_t.get(it) > 10) {
+            		ds.put(k, it);
+            	}
             }
             clu.add(tmp);
         }
@@ -303,7 +347,7 @@ public class MainActivity extends FragmentActivity implements LocationListener {
         
         for(Set<Integer> t : clu) {
         	double x = 0, y = 0, z = 0;
-        	if(t.size() > 3) {
+        	if(t.size() > 100) {
 	            for(Integer j : t) {
 	                Loc_Tag pt = loc_d.get(j);
 	                //count += pt.count;
@@ -333,19 +377,20 @@ public class MainActivity extends FragmentActivity implements LocationListener {
 		//Toast.makeText(this, "COUNT: "+ lds.getCount() + "", Toast.LENGTH_LONG).show();
 		
 		ArrayList<Loc_Tag> usd = new ArrayList<Loc_Tag>();
-		
+		int prev = -1;
 		for(Loc_Tag tmp : loc_d) {
 			int i = poi.nearestPOIIndex(tmp);
-			if(i >= 0) {
+			if(i >= 0 && prev != i) {
 				tmp.index = i;
 				usd.add(tmp);
+				prev = i;
 			}
 		}
 		
 		da = new DataAnalyser();
 		da.addLoc_Tag(usd);
 		
-		st = new Suggester(da, poi);
+		st = new Suggester(da, poi, this);
 	}
 
 

@@ -2,6 +2,7 @@ package com.gb.pro.nLocation;
 
 import java.text.Format;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -85,6 +86,7 @@ public class NextLocation {
 
 		// Adding marker on the Google Map
 		gMap.addMarker(markerOptions);
+		gMap.moveCamera(CameraUpdateFactory.newLatLng(point));
 	}
 	
 	public boolean calendarEvent() {

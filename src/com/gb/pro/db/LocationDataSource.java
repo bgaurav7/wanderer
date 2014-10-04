@@ -1,5 +1,10 @@
 package com.gb.pro.db;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +16,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.provider.MediaStore.Files;
 import android.util.Log;
+import android.widget.Toast;
 
 public class LocationDataSource {
 
 	public static final String LOGTAG = "WANDERER";
-	
+	Context main;
 	SQLiteOpenHelper dbhelper;
 	SQLiteDatabase database;
 	
@@ -37,6 +45,7 @@ public class LocationDataSource {
 	};
 	
 	public LocationDataSource(Context context) {
+		this.main = context;
 		dbhelper = new DBOpenHelper(context);
 	}
 	
@@ -194,5 +203,81 @@ public class LocationDataSource {
 	    c.close();
 	    
 		return l;
+	}
+	
+	public void exoprtAllLoc_Tag() throws IOException {
+		if(chkExtStorage()) {
+			File extDir = main.getExternalFilesDir(null);
+			
+			String path = extDir.getAbsolutePath();
+			
+			File file = new File(path, "DUMP_LOC.txt");
+			
+			FileOutputStream fos = new FileOutputStream(file);
+			PrintWriter pw = new PrintWriter(fos);
+			
+			Cursor c = database.rawQuery("SELECT * FROM " + DBOpenHelper.TABLE_LOC_RAW , null);
+			
+			if (c.moveToFirst()) {
+			     do {
+			    	 Loc_Tag t = new Loc_Tag(c.getDouble(c.getColumnIndex(DBOpenHelper.LAT)),
+								c.getDouble(c.getColumnIndex(DBOpenHelper.LNG)));
+			    	 t.index = c.getInt(c.getColumnIndex(DBOpenHelper.LOC_RAW_ID));
+			    	 //t.count = c.getInt(c.getColumnIndex(DBOpenHelper.COUNT));
+			    	 //l.add(t); 
+			    	 pw.println(t.lat + "\t" + t.lng);
+	
+			     } while (c.moveToNext());
+			}
+			pw.flush();
+			pw.close();
+			fos.close();
+			Toast.makeText(main, "Location Data Export Complete", Toast.LENGTH_SHORT).show();
+		    c.close();
+		}
+	}
+	
+	public void exportAllPOI() throws IOException {
+		if(chkExtStorage()) {
+			File extDir = main.getExternalFilesDir(null);
+			
+			String path = extDir.getAbsolutePath();
+			
+			File file = new File(path, "DUMP_POI.txt");
+			
+			FileOutputStream fos = new FileOutputStream(file);
+			PrintWriter pw = new PrintWriter(fos);
+			
+			Cursor c = database.rawQuery("SELECT * FROM " + DBOpenHelper.TABLE_POI , null);
+			
+			if (c.moveToFirst()) {
+			     do {
+			    	 Loc_Tag t = new Loc_Tag(c.getDouble(c.getColumnIndex(DBOpenHelper.LAT_P)),
+								c.getDouble(c.getColumnIndex(DBOpenHelper.LNG_P)));
+			    	 
+			    	 pw.println(t.lat + "\t" + t.lng);
+			     } while (c.moveToNext());
+			}
+			pw.flush();
+			pw.close();
+			fos.close();
+			Toast.makeText(main, "POI Data Export Complete", Toast.LENGTH_SHORT).show();
+			
+		    c.close();
+		}
+	}
+	
+	public boolean chkExtStorage() {
+		String state = Environment.getExternalStorageState();
+		
+		if(state.equals(Environment.MEDIA_MOUNTED)) {
+			return true;
+		} else if(state.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+			Toast.makeText(main, "External Storage is Read-Only", Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(main, "External Storage Not Available", Toast.LENGTH_SHORT).show();
+		}
+		
+		return false;
 	}
 }
